@@ -6,6 +6,7 @@ import io.swagger.model.JsonApiBodyResponseSuccess;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
 import io.swagger.utils.FlagsInformation;
+import io.swagger.utils.Validaciones;
 
 import com.amazonaws.services.directconnect.model.transform.NewPrivateVirtualInterfaceAllocationMarshaller;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,23 +57,43 @@ public class RegistrarApiController implements RegistrarApi {
         String id = body.getPersona().get(0).getId();
         String estado = body.getPersona().get(0).getEstado();
         
+        JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
         JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
         respuestaExitosa.setId(id);
         respuestaExitosa.setEstado(estado);
         respuestaExitosa.setNombre(nombre);
    
-        if (accept != null && accept.contains("application/json")) {
-     
-        	if(body.getPersona().get(0).getRol().equalsIgnoreCase("super administrador master")) {
-        		JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
-        		responseError.setCodigo(error.SUPERADMINMASTER_ERROR_CODE);
-        		responseError.setDetalle(error.SUPERADMINMASTER_ERROR_MSN);
-        		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
-        	}else {
-            	RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
-                return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
-        	}
-          
+		if (accept != null && accept.contains("application/json")) {
+			List<RegistrarRequest> correo = userRepository.findByCorreo(body.getPersona().get(0).getCorreo());
+			if (correo.isEmpty()) {
+				
+				if (Validaciones.validarCorreo(body.getPersona().get(0).getCorreo())) {
+					System.out.println("correo melo");
+
+				} else {
+					responseError.setCodigo(error.CODE_6002);
+					responseError.setDetalle(error.MSN_CODE_6002);
+					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
+
+				}
+
+				if (body.getPersona().get(0).getRol().equalsIgnoreCase("super administrador master")) {
+
+					responseError.setCodigo(error.SUPERADMINMASTER_ERROR_CODE);
+					responseError.setDetalle(error.SUPERADMINMASTER_ERROR_MSN);
+					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
+				} else {
+					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
+					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
+				}
+				
+			}else {
+				responseError.setCodigo(error.CODE_6001);
+				responseError.setDetalle(error.MSN_CODE_6001);
+				return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
+			}
+			
+
 		} else {
 			return new ResponseEntity<JsonApiBodyResponseSuccess>(HttpStatus.NOT_IMPLEMENTED);
 		}

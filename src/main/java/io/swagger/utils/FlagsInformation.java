@@ -24,6 +24,8 @@ public class FlagsInformation {
     //--------------- BANDERAS PARA CORREOS
     public final String MSN_CODE_6001 = "CORREO YA REGISTRADO";
         public final String CODE_6001 = "6001";
+    public final String MSN_CODE_6002 = "CORREO INVALIDO";
+    	public final String CODE_6002 = "6002";
  
    
     //--------------- BANDERA PARA SUPERADMINMASTER   

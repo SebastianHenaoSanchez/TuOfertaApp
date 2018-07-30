@@ -52,7 +52,8 @@ public class RegistrarRequest   {
   @JsonProperty("estado")
   private String estado = null;
 
- 
+  @JsonProperty("token")
+  private String token = null;
 
   public RegistrarRequest id(String id) {
     this.id = id;
@@ -246,6 +247,28 @@ public class RegistrarRequest   {
     this.estado = estado;
   }
 
+	public RegistrarRequest token(String token) {
+		this.token = token;
+		return this;
+	}
+
+	/**
+	 * Get token
+	 * 
+	 * @return token
+	 **/
+	@ApiModelProperty(required = true, value = "")
+	@NotNull
+
+	@DynamoDBAttribute
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -263,12 +286,13 @@ public class RegistrarRequest   {
         Objects.equals(this.telefono, registrarRequest.telefono) &&
         Objects.equals(this.genero, registrarRequest.genero) &&
         Objects.equals(this.rol, registrarRequest.rol) &&
-        Objects.equals(this.estado, registrarRequest.estado);
+        Objects.equals(this.estado, registrarRequest.estado)&&    
+        Objects.equals(this.token, registrarRequest.token);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, nombre, apellidos, correo, contrasena, telefono, genero, rol, estado);
+    return Objects.hash(id, nombre, apellidos, correo, contrasena, telefono, genero, rol, estado, token);
   }
 
   @Override
@@ -285,7 +309,8 @@ public class RegistrarRequest   {
     sb.append("    genero: ").append(toIndentedString(genero)).append("\n");
     sb.append("    rol: ").append(toIndentedString(rol)).append("\n");
     sb.append("    estado: ").append(toIndentedString(estado)).append("\n");
-   
+    sb.append("    token: ").append(toIndentedString(token)).append("\n");
+    
     sb.append("}");
     return sb.toString();
   }

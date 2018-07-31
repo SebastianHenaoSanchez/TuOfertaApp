@@ -4,6 +4,7 @@ import io.swagger.model.JsonApiBodyRequest;
 import io.swagger.model.JsonApiBodyResponseErrors;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
+import io.swagger.utils.FlagsInformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -40,16 +41,24 @@ public class EliminarApiController implements EliminarApi {
     @Autowired
     UserRepository personaRepository;
 
+    FlagsInformation error = new FlagsInformation();
+ 
     @org.springframework.beans.factory.annotation.Autowired
     public EliminarApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
     }
 
-    public ResponseEntity<JsonApiBodyRequest> eliminarIdDelete(@ApiParam(value = "Pet id to delete",required=true) @PathVariable("id") String id) {
+    public ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "id to delete",required=true) @PathVariable("id") String id) {
         String accept = request.getHeader("Accept");
+        JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
         if (accept != null && accept.contains("application/json")) {
         	RegistrarRequest persona = personaRepository.findOne(id);
+        	if(persona == null) {
+        		responseError.setCodigo(error.CODE_1001);
+        		responseError.setDetalle(error.MSN_CODE_1001);
+        		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+        	}
         	personaRepository.delete(id);
         	JsonApiBodyRequest body = new JsonApiBodyRequest();
         	List<RegistrarRequest> lista = new ArrayList<RegistrarRequest>();

@@ -34,6 +34,6 @@ public interface EliminarApi {
     @RequestMapping(value = "/eliminar/{id}",
         produces = { "application/json" }, 
         method = RequestMethod.DELETE)
-    ResponseEntity<JsonApiBodyRequest> eliminarIdDelete(@ApiParam(value = "Pet id to delete",required=true) @PathVariable("id") String id);
+    ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "id to delete",required=true) @PathVariable("id") String id);
 
 }

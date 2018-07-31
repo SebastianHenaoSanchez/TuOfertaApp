@@ -4,6 +4,7 @@ import io.swagger.model.JsonApiBodyRequest;
 import io.swagger.model.JsonApiBodyResponseErrors;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
+import io.swagger.utils.FlagsInformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -39,6 +40,8 @@ public class ListarApiController implements ListarApi {
     
     @Autowired
     UserRepository personaRepository;
+    
+    FlagsInformation error = new FlagsInformation();
 
     @org.springframework.beans.factory.annotation.Autowired
     public ListarApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -69,8 +72,8 @@ public class ListarApiController implements ListarApi {
 		
 			if (persona.isEmpty()) {
 				JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
-        		responseError.setCodigo("2");
-        		responseError.setDetalle("base de datos vacia");
+        		responseError.setCodigo(error.CODE_BD_VACIA);
+        		responseError.setDetalle(error.BD_VACIA);
         		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 			}else {
 				
@@ -89,8 +92,8 @@ public class ListarApiController implements ListarApi {
             
 			if (persona == null) {
 				JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
-				responseError.setCodigo("3");
-				responseError.setDetalle("El id ingresado no existe");
+				responseError.setCodigo(error.CODE_1001);
+				responseError.setDetalle(error.MSN_CODE_1001);
 				return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 			} else {
 				JsonApiBodyRequest body = new JsonApiBodyRequest();
@@ -112,7 +115,7 @@ public class ListarApiController implements ListarApi {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             List<RegistrarRequest> persona = personaRepository.findByRol(rol);
-            
+           
             JsonApiBodyRequest body = new JsonApiBodyRequest();
 			body.setPersona(persona);
 			return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.NOT_IMPLEMENTED);

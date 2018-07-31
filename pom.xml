@@ -81,5 +81,13 @@
 		   <artifactId>aws-java-sdk</artifactId>
 		   <version>1.11.133</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.11</version>
+		</dependency>
+		
     </dependencies>
 </project>

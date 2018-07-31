@@ -5,6 +5,7 @@ import io.swagger.model.JsonApiBodyResponseErrors;
 import io.swagger.model.JsonApiBodyResponseSuccess;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
+import io.swagger.utils.Encriptado_MD5;
 import io.swagger.utils.FlagsInformation;
 import io.swagger.utils.Validaciones;
 
@@ -44,6 +45,7 @@ public class RegistrarApiController implements RegistrarApi {
 	private final HttpServletRequest request;
 
 	FlagsInformation error = new FlagsInformation();
+	Encriptado_MD5 encriptar = new Encriptado_MD5();
 
 	@org.springframework.beans.factory.annotation.Autowired
 	public RegistrarApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -58,6 +60,8 @@ public class RegistrarApiController implements RegistrarApi {
 		String id = body.getPersona().get(0).getId();
 		String estado = body.getPersona().get(0).getEstado();
 		String rol = body.getPersona().get(0).getRol();
+		
+	
 
 		JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
 		JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
@@ -102,6 +106,9 @@ public class RegistrarApiController implements RegistrarApi {
 							//pregunta si el rol de la persona con ese token es super administrador  
 							if(personas.get(0).getRol().equals("super administrador")) {
 								body.getPersona().get(0).setToken("");
+								//encriptamos la contraseña
+								body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+								
 								RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 								return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
 								
@@ -114,6 +121,8 @@ public class RegistrarApiController implements RegistrarApi {
 						}
 
 					}else if (rol== "usuario") {
+						//encriptar contraseña
+						body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
 						RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
 						

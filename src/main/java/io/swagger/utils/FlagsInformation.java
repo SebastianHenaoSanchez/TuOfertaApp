@@ -2,6 +2,7 @@ package io.swagger.utils;
 
 public class FlagsInformation {
 	 //--------------- BANDERAS PARA ID
+// usado	
     public final String MSN_CODE_1001 = "ID NO ENCONTRADO";
         public final String CODE_1001 = "1001";
     public final String MSN_CODE_1002 = "ID YA REGISTRADO";
@@ -49,5 +50,8 @@ public class FlagsInformation {
    
     //--------------- BANDERA PARA USER
     public final String USER = "USER";
-
+    
+    //--------------- BANDERA PARA BASE DE DATOS
+    public final String BD_VACIA = "BASE DE DATOS VACIA";
+    public final String CODE_BD_VACIA = "7000";
 }

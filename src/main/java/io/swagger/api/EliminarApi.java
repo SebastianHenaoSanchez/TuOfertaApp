@@ -6,6 +6,7 @@
 package io.swagger.api;
 
 import io.swagger.model.JsonApiBodyRequest;
+import io.swagger.model.JsonApiBodyRequestDelete;
 import io.swagger.model.JsonApiBodyResponseErrors;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,13 @@ import java.util.List;
 @Api(value = "eliminar", description = "the eliminar API")
 public interface EliminarApi {
 
-    @ApiOperation(value = "eliminar persona por id", nickname = "eliminarIdDelete", notes = "", response = JsonApiBodyRequest.class, tags={ "personas", })
+    @ApiOperation(value = "eliminar persona", nickname = "eliminarIdDelete", notes = "", response = JsonApiBodyRequest.class, tags={ "personas", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "persona eliminada", response = JsonApiBodyRequest.class),
-        @ApiResponse(code = 404, message = "rol no encontrado", response = JsonApiBodyResponseErrors.class) })
-    @RequestMapping(value = "/eliminar/{id}",
+        @ApiResponse(code = 404, message = "datos incompletos o incorrectos", response = JsonApiBodyResponseErrors.class) })
+    @RequestMapping(value = "/eliminar",
         produces = { "application/json" }, 
         method = RequestMethod.DELETE)
-    ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "id to delete",required=true) @PathVariable("id") String id);
+    ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "body",required=true)  @Valid @RequestBody JsonApiBodyRequestDelete body);
 
 }

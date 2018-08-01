@@ -36,6 +36,6 @@ public interface EditarApi {
         produces = { "application/json" }, 
         consumes = { "application/json" },
         method = RequestMethod.PUT)
-    ResponseEntity<JsonApiBodyResponseSuccess> editarPut(@ApiParam(value = "Pet object that needs to be added to the store" ,required=true )  @Valid @RequestBody JsonApiBodyRequest body);
+    ResponseEntity<?> editarPut(@ApiParam(value = "Pet object that needs to be added to the store" ,required=true )  @Valid @RequestBody JsonApiBodyRequest body);
 
 }

@@ -9,7 +9,7 @@ public class FlagsInformation {
         public final String CODE_1002 = "1002";
    
     //--------------- BANDERAS PARA ROL
-    public final String MSN_CODE_2001 = "ROL NO ENCONTRADO";
+    public final String MSN_CODE_2001 = "ROL NO ENCONTRADO O NO INGRESADO";
         public final String CODE_2001 = "2001";
    
     //--------------- BANDERAS PARA ESTADO
@@ -33,14 +33,15 @@ public class FlagsInformation {
     public final String SUPERADMINMASTER = "SUPERADMINMASTER";
     
 //usado
-        public final String SUPERADMINMASTER_ERROR_MSN = "NO ES POSIBLE REGISTRAR MÁS SUPERADMINMASTER";
+        public final String SUPERADMINMASTER_ERROR_MSN = "NO ES POSIBLE REGISTRAR MÁS SUPERADMIN ROOT";
         public final String SUPERADMINMASTER_ERROR_CODE = "7001";
+//usado   
+        public final String SUPERADMIN_ROOT_ELIMINAR_MSN = "NO ES POSIBLE ELIMINAR EL SUPERADMIN ROOT";
+        public final String SUPERADMIN_ROOT_ELIMINAR_ERROR_CODE = "7002";
         
-        public final String SUPERADMINMASTER_ELIMINAR_MSN = "NO ES POSIBLE ELIMINAR EL SUPERADMINMASTER";
-        public final String SUPERADMINMASTER_ELIMINAR_ERROR_CODE = "7002";
-        
-        public final String SUPERADMINMASTER_EDITAR_MSN = "NO ES POSIBLE EDITAR EL SUPERADMINMASTER";
-        public final String SUPERADMINMASTER_EDITAR_ERROR_CODE = "7003";
+ //usado 
+        public final String SUPERADMIN_ROOT_EDITAR_MSN = "NO ES POSIBLE EDITAR EL SUPERADMIN ROOT";
+        public final String SUPERADMIN_ROOT_EDITAR_ERROR_CODE = "7003";
         
     //--------------- BANDERA PARA SUPERADMIN
     public final String SUPERADMIN = "SUPERADMIN";

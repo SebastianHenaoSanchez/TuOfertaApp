@@ -30,6 +30,7 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-07-25T19:33:57.780Z")
 
 @Controller
@@ -53,15 +54,14 @@ public class RegistrarApiController implements RegistrarApi {
 		this.request = request;
 	}
 
-	public ResponseEntity<?> registrarPost(@ApiParam(value = "body", required = true) @Valid @RequestBody JsonApiBodyRequest body) {
+	public ResponseEntity<?> registrarPost(
+			@ApiParam(value = "body", required = true) @Valid @RequestBody JsonApiBodyRequest body) {
 		String accept = request.getHeader("Accept");
 
 		String nombre = body.getPersona().get(0).getNombre();
 		String id = body.getPersona().get(0).getId();
 		String estado = body.getPersona().get(0).getEstado();
 		String rol = body.getPersona().get(0).getRol();
-		
-	
 
 		JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
 		JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
@@ -84,63 +84,53 @@ public class RegistrarApiController implements RegistrarApi {
 					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 
 				}
+				System.out.println("despues de que dijo correo melo");
+				// lista de personas de acuerdo a un token
+				List<RegistrarRequest> personas;
+				String token = body.getPersona().get(0).getToken();
+				System.out.println(token);
+				// preguntamos el tipo de persona que se desea registrar
+				if (rol.equals("super administrador")) {
+					personas = userRepository.findByToken(token);
+					// pregunta si el token esta en la db
+					if (personas.isEmpty() || personas.equals(null)) {
+						responseError.setCodigo("1");
+						responseError.setDetalle("este token no existe");
+						return new ResponseEntity<JsonApiBodyResponseErrors>(responseError,
+								HttpStatus.FAILED_DEPENDENCY);
+					} else {
+						// pregunta si el rol de la persona con ese token es super administrador y
+						// ademas si tiene el id del root
+						if (personas.get(0).getRol().equals("super administrador")
+								&& personas.get(0).getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
+							body.getPersona().get(0).setToken("");
+							// encriptamos la contraseña
+							body.getPersona().get(0)
+									.setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
 
-				if (body.getPersona().get(0).getRol().equalsIgnoreCase("super administrador master")) {
+							RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
+							return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,
+									HttpStatus.NOT_IMPLEMENTED);
 
-					responseError.setCodigo(error.SUPERADMINMASTER_ERROR_CODE);
-					responseError.setDetalle(error.SUPERADMINMASTER_ERROR_MSN);
-					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
-				} else {
-					
-					//lista de personas de acuerdo a un token
-					List<RegistrarRequest> personas;	
-					String token = body.getPersona().get(0).getToken();
-					if (rol.equals("administrador")) {
-						personas = userRepository.findByToken(token);
-						//pregunta si el token esta en la db
-						if (personas.isEmpty() || personas.equals(null)) {
-							responseError.setCodigo("1");
-							responseError.setDetalle("este rol no existe");
-							return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
-						}else {
-							//pregunta si el rol de la persona con ese token es super administrador  
-							if(personas.get(0).getRol().equals("super administrador")) {
-								body.getPersona().get(0).setToken("");
-								//encriptamos la contraseña
-								body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
-								
-								RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
-								return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
-								
-								
-							}else {
-								responseError.setCodigo("2");
-								responseError.setDetalle("solo un super administrador puede crear administradores");
-								return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
-							}
+						} else {
+							responseError.setCodigo("2");
+							responseError.setDetalle("solo el super administrador (root) puede crear administradores");
+							return new ResponseEntity<JsonApiBodyResponseErrors>(responseError,
+									HttpStatus.FAILED_DEPENDENCY);
 						}
-
-					}else if (rol== "usuario") {
-						//encriptar contraseña
-						body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
-						RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
-						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
-						
-						
-						
-					}else if (rol == "super administrador") {
-						
-					}else {
-						responseError.setCodigo(error.CODE_2001);
-						responseError.setDetalle(error.MSN_CODE_2001);
-						return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 					}
-					
-					responseError.setCodigo("3");
-					responseError.setDetalle("algo falló");
-					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
-					
 
+				}
+				if (rol.equals("usuario") || rol.equals("administrador")) {
+					// encriptar contraseña
+					body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
+					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
+
+				}else {
+					responseError.setCodigo(error.CODE_2001);
+					responseError.setDetalle(error.MSN_CODE_2001);
+					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 				}
 
 			} else {

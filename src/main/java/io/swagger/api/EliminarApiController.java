@@ -1,7 +1,9 @@
 package io.swagger.api;
 
 import io.swagger.model.JsonApiBodyRequest;
+import io.swagger.model.JsonApiBodyRequestDelete;
 import io.swagger.model.JsonApiBodyResponseErrors;
+import io.swagger.model.JsonApiBodyResponseSuccess;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
 import io.swagger.utils.FlagsInformation;
@@ -49,23 +51,64 @@ public class EliminarApiController implements EliminarApi {
         this.request = request;
     }
 
-    public ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "id to delete",required=true) @PathVariable("id") String id) {
+    public ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "body",required=true) @Valid @RequestBody JsonApiBodyRequestDelete body) {
         String accept = request.getHeader("Accept");
+
+		String id = body.getPersona().get(0).getId();
+	
+		
         JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
+       
+      
         if (accept != null && accept.contains("application/json")) {
-        	RegistrarRequest persona = personaRepository.findOne(id);
-        	if(persona == null) {
-        		responseError.setCodigo(error.CODE_1001);
-        		responseError.setDetalle(error.MSN_CODE_1001);
+        	List<RegistrarRequest> root;
+        	root = personaRepository.findByToken(body.getPersona().get(0).getToken());
+        	
+        	//no dejar que se elimine super admin root
+        	System.out.println("antes de buscar por id");
+        	RegistrarRequest persona=personaRepository.findOne(body.getPersona().get(0).getId());
+        	System.out.println("antes del null");
+        	if (persona == null) {
+        		System.out.println("entro al null");
+    			responseError.setCodigo(error.CODE_1001);
+    			responseError.setDetalle(error.MSN_CODE_1001);
+    			return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+    		}
+        	System.out.println("despues del null");
+        	if(persona.getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
+        		responseError.setCodigo(error.SUPERADMIN_ROOT_ELIMINAR_ERROR_CODE);
+        		responseError.setDetalle(error.SUPERADMIN_ROOT_ELIMINAR_MSN);
         		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
         	}
-        	personaRepository.delete(id);
-        	JsonApiBodyRequest body = new JsonApiBodyRequest();
-        	List<RegistrarRequest> lista = new ArrayList<RegistrarRequest>();
-			lista.add(persona);
-        	body.setPersona(lista);
-            	
-            return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.NOT_IMPLEMENTED);
+        	//miramos si el token obtenido esta en la BD
+        	if(root == null || root.isEmpty()) {
+        		responseError.setCodigo("0000000");
+        		responseError.setDetalle("token no existe");
+        		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+        	}
+        	//miramos si la persona que realiza la accion es el root
+        	if (root.get(0).getRol().equals("super administrador") && root.get(0).getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
+        		System.out.println("entro aqui a eliminar");	
+		        		JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
+		        		respuestaExitosa.setEstado("eliminada");
+		        		respuestaExitosa.setId(persona.getId());
+		        		respuestaExitosa.setNombre(persona.getNombre());
+		        		List<RegistrarRequest> lista = new ArrayList<RegistrarRequest>();
+						lista.add(persona);
+						
+						personaRepository.delete(id);
+		
+		        		
+						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
+		        		
+        	}else {
+        		responseError.setCodigo("9999999");
+        		responseError.setDetalle("no tiene permiso para eliminar");
+        		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+        		
+        	}
+        	
+      
             
         }
 

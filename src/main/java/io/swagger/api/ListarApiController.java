@@ -77,7 +77,7 @@ public class ListarApiController implements ListarApi {
         		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
 			}else {
 				
-				return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.NOT_IMPLEMENTED);
+				return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.OK);
         
 			}
         }
@@ -118,7 +118,7 @@ public class ListarApiController implements ListarApi {
            
             JsonApiBodyRequest body = new JsonApiBodyRequest();
 			body.setPersona(persona);
-			return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.NOT_IMPLEMENTED);
+			return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.OK);
         }
 
         return new ResponseEntity<JsonApiBodyRequest>(HttpStatus.NOT_IMPLEMENTED);

@@ -110,7 +110,7 @@ public class RegistrarApiController implements RegistrarApi {
 
 							RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 							return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,
-									HttpStatus.NOT_IMPLEMENTED);
+									HttpStatus.OK);
 
 						} else {
 							responseError.setCodigo("2");
@@ -125,7 +125,7 @@ public class RegistrarApiController implements RegistrarApi {
 					// encriptar contraseña
 					body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
 					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
-					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
+					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
 
 				}else {
 					responseError.setCodigo(error.CODE_2001);

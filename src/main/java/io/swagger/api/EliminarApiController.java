@@ -99,7 +99,7 @@ public class EliminarApiController implements EliminarApi {
 						personaRepository.delete(id);
 		
 		        		
-						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.NOT_IMPLEMENTED);
+						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
 		        		
         	}else {
         		responseError.setCodigo("9999999");

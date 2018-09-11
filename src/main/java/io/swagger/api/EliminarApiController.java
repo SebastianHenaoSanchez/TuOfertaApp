@@ -63,7 +63,7 @@ public class EliminarApiController implements EliminarApi {
         if (accept != null && accept.contains("application/json")) {
         	List<RegistrarRequest> root;
         	root = personaRepository.findByToken(body.getPersona().get(0).getToken());
-        	
+    
         	//no dejar que se elimine super admin root
         	System.out.println("antes de buscar por id");
         	RegistrarRequest persona=personaRepository.findOne(body.getPersona().get(0).getId());
@@ -90,15 +90,16 @@ public class EliminarApiController implements EliminarApi {
         	if (root.get(0).getRol().equals("super administrador") && root.get(0).getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
         		System.out.println("entro aqui a eliminar");	
 		        		JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
-		        		respuestaExitosa.setEstado("eliminada");
+		        		
+		        		List<RegistrarRequest> lista = new ArrayList<RegistrarRequest>();
+		        		persona.setEstado("inactivo");
+						lista.add(persona);
+						RegistrarRequest user = personaRepository.save(persona);
+						
+		
+						respuestaExitosa.setEstado("inactivo");
 		        		respuestaExitosa.setId(persona.getId());
 		        		respuestaExitosa.setNombre(persona.getNombre());
-		        		List<RegistrarRequest> lista = new ArrayList<RegistrarRequest>();
-						lista.add(persona);
-						
-						personaRepository.delete(id);
-		
-		        		
 						return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
 		        		
         	}else {

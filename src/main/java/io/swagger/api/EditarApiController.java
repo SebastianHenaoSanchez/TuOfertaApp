@@ -5,6 +5,7 @@ import io.swagger.model.JsonApiBodyResponseErrors;
 import io.swagger.model.JsonApiBodyResponseSuccess;
 import io.swagger.model.RegistrarRequest;
 import io.swagger.repository.UserRepository;
+import io.swagger.utils.Encriptado_MD5;
 import io.swagger.utils.FlagsInformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,12 +40,15 @@ public class EditarApiController implements EditarApi {
 
     private final HttpServletRequest request;
     
+    
+    
     @Autowired
     UserRepository personaRepository;
     
     JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
     JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
     FlagsInformation  error = new FlagsInformation();
+    Encriptado_MD5 encriptar = new Encriptado_MD5();
 
     @org.springframework.beans.factory.annotation.Autowired
     public EditarApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -59,38 +63,42 @@ public class EditarApiController implements EditarApi {
         String id = body.getPersona().get(0).getId();
         String estado = body.getPersona().get(0).getEstado();
         String rol =body.getPersona().get(0).getRol();
-        
-     
+        String token = body.getPersona().get(0).getToken();
+       
+       
       
         if (accept != null && accept.contains("application/json")) {
-        	
+        
         	List<RegistrarRequest> root;
+        	//se busca la persona que realiza la acccion con el token
         	root = personaRepository.findByToken(body.getPersona().get(0).getToken());
         	if(root == null || root.isEmpty()) {
         		responseError.setCodigo("0000000");
         		responseError.setDetalle("token no existe");
         		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
         	}	
+        	//se pregunta si es el super administrador
         	if(root.get(0).getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
-        		//el admin root solo se edita asi mismo
+        		//el super administrador solo se edita asi mismo
         		if(id.equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
-        			body.getPersona().get(0).setToken("");
+        			body.getPersona().get(0).setToken("1234");
+        			//body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
     	       		RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
     	            
     	             respuestaExitosa.setId(id);
     	             respuestaExitosa.setEstado(estado);
     	             respuestaExitosa.setNombre(nombre);
-    	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
+    	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.OK);
     	       	}else {
     	       		//si el root va a editar un super admin
-    	       		if (rol == "super administrador") {
-    	       			body.getPersona().get(0).setToken("");
+    	       		if (rol.equals("administrador")) {
+    	       			body.getPersona().get(0).setToken("123");
     	       			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
         	            
           	             respuestaExitosa.setId(id);
           	             respuestaExitosa.setEstado(estado);
           	             respuestaExitosa.setNombre(nombre);
-          	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);	
+          	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.OK);	
     	       		}else {
     	       			responseError.setCodigo("034");
     	       			responseError.setDetalle("el root solo puede editar super admins o asi mismo");
@@ -98,43 +106,44 @@ public class EditarApiController implements EditarApi {
     	       		}
     	       	}
         	}
-        	if(root.get(0).getRol().equals("super administrador")) {
-        		if(root.get(0).getId().equals(id)) {
-        			body.getPersona().get(0).setToken("");
-        			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
-    	            
-     	             respuestaExitosa.setId(id);
-     	             respuestaExitosa.setEstado(estado);
-     	             respuestaExitosa.setNombre(nombre);
-     	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
-       			
-        		}
-        		if (rol.equals("administrador")) {
-        			body.getPersona().get(0).setToken("");
-        			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
-    	            
-      	             respuestaExitosa.setId(id);
-      	             respuestaExitosa.setEstado(estado);
-      	             respuestaExitosa.setNombre(nombre);
-      	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
-        			
-        		}else {
-        			responseError.setCodigo("4545");
-    	       		responseError.setDetalle("el super admin solo puede editar administradores o asi mismo");
-    	      		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
-        		}
-       		
-        	}
+//        	if(root.get(0).getRol().equals("super administrador")) {
+//        		if(root.get(0).getId().equals(id)) {
+//        			body.getPersona().get(0).setToken("");
+//        			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
+//    	            
+//     	             respuestaExitosa.setId(id);
+//     	             respuestaExitosa.setEstado(estado);
+//     	             respuestaExitosa.setNombre(nombre);
+//     	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
+//       			
+//        		}
+//        		if (rol.equals("administrador")) {
+//        			body.getPersona().get(0).setToken("");
+//        			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
+//    	            
+//      	             respuestaExitosa.setId(id);
+//      	             respuestaExitosa.setEstado(estado);
+//      	             respuestaExitosa.setNombre(nombre);
+//      	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
+//        			
+//        		}else {
+//        			responseError.setCodigo("4545");
+//    	       		responseError.setDetalle("el super admin solo puede editar administradores o asi mismo");
+//    	      		return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+//        		}
+//       		
+//        	}
         	if(root.get(0).getRol().equals("usuario")) {
         		if(root.get(0).getId().equals(id)) {
         			
-        			body.getPersona().get(0).setToken("");
+        			body.getPersona().get(0).setToken("12");
+        		//	body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
         			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
     	            
      	             respuestaExitosa.setId(id);
      	             respuestaExitosa.setEstado(estado);
      	             respuestaExitosa.setNombre(nombre);
-     	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
+     	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.OK);
        			
         			
         		}
@@ -146,14 +155,15 @@ public class EditarApiController implements EditarApi {
         		
         	}
         	if(root.get(0).getRol().equals("administrador")) {
-        		if(root.get(0).getId().equals(id)) {
-        			body.getPersona().get(0).setToken("");
+        		if(root.get(0).getToken().equals(token)) {
+        			body.getPersona().get(0).setToken("123");
+        			//body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
         			RegistrarRequest persona = personaRepository.save(body.getPersona().get(0)); 
     	            
     	             respuestaExitosa.setId(id);
     	             respuestaExitosa.setEstado(estado);
     	             respuestaExitosa.setNombre(nombre);
-    	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.NOT_IMPLEMENTED);
+    	            return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,HttpStatus.OK);
         		}else {
         			responseError.setCodigo("98342");
     	       		responseError.setDetalle("el administrador solo puede editarse asi mismo");

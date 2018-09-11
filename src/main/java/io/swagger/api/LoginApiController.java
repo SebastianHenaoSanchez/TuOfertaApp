@@ -56,7 +56,7 @@ public class LoginApiController implements LoginApi {
         if (accept != null && accept.contains("application/json")) {
         	
             Encriptado_MD5 encriptar = new Encriptado_MD5();
-			String contraseñaIngresada = encriptar.encriptar(body.getContrasena());
+			//String contraseñaIngresada = encriptar.encriptar(body.getContrasena());
 			
 			//buscamos la persona que tiene el correo ingresado
 			List<RegistrarRequest> persona = personaRepository.findByCorreo(body.getCorreo());
@@ -69,7 +69,7 @@ public class LoginApiController implements LoginApi {
 			}else {
 				//si el correo existe en la BD ahora preguntamos si las contraseñas coinciden
 				String contraseñaGuardada = persona.get(0).getContrasena();
-				if(contraseñaGuardada.equals(contraseñaIngresada)) {
+				if(contraseñaGuardada.equals(body.getContrasena())) {
 					
 					JsonApiBodyRequest datosPersona = new JsonApiBodyRequest();
 			    	datosPersona.setPersona(persona);

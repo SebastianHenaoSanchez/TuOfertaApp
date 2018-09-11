@@ -34,7 +34,7 @@ public interface EliminarApi {
         @ApiResponse(code = 404, message = "datos incompletos o incorrectos", response = JsonApiBodyResponseErrors.class) })
     @RequestMapping(value = "/eliminar",
         produces = { "application/json" }, 
-        method = RequestMethod.DELETE)
+        method = RequestMethod.POST)
     ResponseEntity<?> eliminarIdDelete(@ApiParam(value = "body",required=true)  @Valid @RequestBody JsonApiBodyRequestDelete body);
 
 }

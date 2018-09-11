@@ -70,6 +70,7 @@ public class RegistrarApiController implements RegistrarApi {
 		respuestaExitosa.setNombre(nombre);
 
 		if (accept != null && accept.contains("application/json")) {
+			
 			List<RegistrarRequest> correo = userRepository.findByCorreo(body.getPersona().get(0).getCorreo());
 			// mirar si el correo ya existe
 
@@ -105,8 +106,7 @@ public class RegistrarApiController implements RegistrarApi {
 								&& personas.get(0).getId().equals("cf7e2532-7483-4cd2-b970-20b065dd58dd")) {
 							body.getPersona().get(0).setToken("");
 							// encriptamos la contraseña
-							body.getPersona().get(0)
-									.setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+							//body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
 
 							RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 							return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa,
@@ -123,7 +123,7 @@ public class RegistrarApiController implements RegistrarApi {
 				}
 				if (rol.equals("usuario") || rol.equals("administrador")) {
 					// encriptar contraseña
-					body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+					//body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
 					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
 

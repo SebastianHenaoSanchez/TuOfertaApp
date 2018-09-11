@@ -103,7 +103,7 @@ public class ListarApiController implements ListarApi {
 					System.out.println(registrarRequest.getCorreo());
 				}
 				body.setPersona(lista);
-				return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.NOT_IMPLEMENTED);
+				return new ResponseEntity<JsonApiBodyRequest>(body, HttpStatus.OK);
 
 			}
 		}

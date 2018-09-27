@@ -28,66 +28,107 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-08-16T19:45:02.366Z")
 
 @Controller
 public class LoginApiController implements LoginApi {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginApiController.class);
+	private static final Logger log = LoggerFactory.getLogger(LoginApiController.class);
 
-    private final ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
 
-    private final HttpServletRequest request;
+	private final HttpServletRequest request;
 
-    @Autowired
-    UserRepository personaRepository;
-    
-    JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
-    JsonApiBodyResponseErrors  responseError = new JsonApiBodyResponseErrors();
-    
-    @org.springframework.beans.factory.annotation.Autowired
-    public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
-    }
+	@Autowired
+	UserRepository personaRepository;
 
-    public ResponseEntity<?> loginPost(@ApiParam(value = "Json a ingresar" ,required=true )  @Valid @RequestBody JsonApiBodyRequestLogin body) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-        	
-            Encriptado_MD5 encriptar = new Encriptado_MD5();
-			//String contraseñaIngresada = encriptar.encriptar(body.getContrasena());
-			
-			//buscamos la persona que tiene el correo ingresado
+	JsonApiBodyResponseSuccess respuestaExitosa = new JsonApiBodyResponseSuccess();
+	JsonApiBodyResponseErrors responseError = new JsonApiBodyResponseErrors();
+
+	@org.springframework.beans.factory.annotation.Autowired
+	public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+		this.objectMapper = objectMapper;
+		this.request = request;
+	}
+
+	public ResponseEntity<?> loginPost(
+			@ApiParam(value = "Json a ingresar", required = true) @Valid @RequestBody JsonApiBodyRequestLogin body) {
+		String accept = request.getHeader("Accept");
+		if (accept != null && accept.contains("application/json")) {
+
+			Encriptado_MD5 encriptar = new Encriptado_MD5();
+			// String contraseñaIngresada = encriptar.encriptar(body.getContrasena());
+
+			// buscamos la persona que tiene el correo ingresado
 			List<RegistrarRequest> persona = personaRepository.findByCorreo(body.getCorreo());
-			
-			//preguntamos si encontro a alguien con ese correo
+
+			// preguntamos si encontro a alguien con ese correo
 			if (persona == null || persona.isEmpty()) {
 				responseError.setCodigo("343");
 				responseError.detalle("correo no existe");
-				return new ResponseEntity<JsonApiBodyResponseErrors>(responseError,HttpStatus.NOT_IMPLEMENTED);
-			}else {
-				//si el correo existe en la BD ahora preguntamos si las contraseñas coinciden
+				return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+			} else {
+				// si el correo existe en la BD ahora preguntamos si las contraseñas coinciden
 				String contraseñaGuardada = persona.get(0).getContrasena();
-				if(contraseñaGuardada.equals(body.getContrasena())) {
-					
+				if (contraseñaGuardada.equals(body.getContrasena())) {
+
 					JsonApiBodyRequest datosPersona = new JsonApiBodyRequest();
-			    	datosPersona.setPersona(persona);
+					datosPersona.setPersona(persona);
 					respuestaExitosa.setEstado(datosPersona.getPersona().get(0).getEstado());
 					respuestaExitosa.setId(datosPersona.getPersona().get(0).getId());
 					respuestaExitosa.setNombre(datosPersona.getPersona().get(0).getNombre());
-				
-				 return new ResponseEntity<JsonApiBodyRequest>(datosPersona, HttpStatus.OK);
-				}else {
+
+					return new ResponseEntity<JsonApiBodyRequest>(datosPersona, HttpStatus.OK);
+				} else {
 					responseError.setCodigo("2423");
 					responseError.setDetalle("contraseña incorrecta");
-					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError,HttpStatus.NOT_IMPLEMENTED);
+					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
 				}
-				
+
 			}
-        }
+		}
 
-        return new ResponseEntity<JsonApiBodyResponseSuccess>(HttpStatus.NOT_IMPLEMENTED);
-    }
+		return new ResponseEntity<JsonApiBodyResponseSuccess>(HttpStatus.NOT_IMPLEMENTED);
+	}
 
+	@Override
+	public ResponseEntity<?> loginGet(String correo, String contrasena) {
+		String accept = request.getHeader("Accept");
+		if (accept != null && accept.contains("application/json")) {
+
+			Encriptado_MD5 encriptar = new Encriptado_MD5();
+			// String contraseñaIngresada = encriptar.encriptar(body.getContrasena());
+
+			// buscamos la persona que tiene el correo ingresado
+			List<RegistrarRequest> persona = personaRepository.findByCorreo(correo);
+
+			// preguntamos si encontro a alguien con ese correo
+			if (persona == null || persona.isEmpty()) {
+				responseError.setCodigo("343");
+				responseError.detalle("correo no existe");
+				return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+			} else {
+				// si el correo existe en la BD ahora preguntamos si las contraseñas coinciden
+				String contraseñaGuardada = persona.get(0).getContrasena();
+				if (contraseñaGuardada.equals(contrasena)) {
+
+					JsonApiBodyRequest datosPersona = new JsonApiBodyRequest();
+					datosPersona.setPersona(persona);
+					respuestaExitosa.setEstado(datosPersona.getPersona().get(0).getEstado());
+					respuestaExitosa.setId(datosPersona.getPersona().get(0).getId());
+					respuestaExitosa.setNombre(datosPersona.getPersona().get(0).getNombre());
+
+					return new ResponseEntity<JsonApiBodyRequest>(datosPersona, HttpStatus.OK);
+				} else {
+					responseError.setCodigo("2423");
+					responseError.setDetalle("contraseña incorrecta");
+					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.NOT_IMPLEMENTED);
+				}
+
+			}
+
+		}
+		return new ResponseEntity<JsonApiBodyResponseSuccess>(HttpStatus.NOT_IMPLEMENTED);
+	}
 }

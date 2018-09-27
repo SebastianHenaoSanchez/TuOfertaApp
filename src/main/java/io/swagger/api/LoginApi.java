@@ -39,4 +39,15 @@ public interface LoginApi {
         method = RequestMethod.POST)
     ResponseEntity<?> loginPost(@ApiParam(value = "Json a ingresar" ,required=true )  @Valid @RequestBody JsonApiBodyRequestLogin body);
 
+    
+    @ApiOperation(value = "login de personas", nickname = "loginPost", notes = "", response = JsonApiBodyRequest.class, tags={ "login", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "loggeado correctamente", response = JsonApiBodyRequest.class),
+        @ApiResponse(code = 400, message = "Datos incompletos o incorrectos en el loggeo", response = JsonApiBodyResponseErrors.class) })
+    @RequestMapping(value = "/login",
+        produces = { "application/json" }, 
+        
+        method = RequestMethod.GET)
+    ResponseEntity<?> loginGet(@ApiParam(value = "Json a ingresar" ,required=true )  @Valid @RequestParam String correo,@ApiParam(value = "Json a ingresar" ,required=true )  @Valid @RequestParam String contrasena );
+
 }

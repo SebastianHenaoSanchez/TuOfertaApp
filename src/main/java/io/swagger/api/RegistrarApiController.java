@@ -121,13 +121,20 @@ public class RegistrarApiController implements RegistrarApi {
 					}
 
 				}
-				if (rol.equals("usuario") || rol.equals("administrador")) {
+				if (rol.equals("usuario")) {
 					// encriptar contraseña
-					//body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+					// body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+					body.getPersona().get(0).setToken("12");
 					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
 					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
 
-				}else {
+				}else if (rol.equals("administrador")) {
+					// encriptar contraseña
+					// body.getPersona().get(0).setContrasena(encriptar.encriptar(body.getPersona().get(0).getContrasena()));
+					body.getPersona().get(0).setToken("123");
+					RegistrarRequest persona = userRepository.save(body.getPersona().get(0));
+					return new ResponseEntity<JsonApiBodyResponseSuccess>(respuestaExitosa, HttpStatus.OK);
+				} else {
 					responseError.setCodigo(error.CODE_2001);
 					responseError.setDetalle(error.MSN_CODE_2001);
 					return new ResponseEntity<JsonApiBodyResponseErrors>(responseError, HttpStatus.FAILED_DEPENDENCY);
